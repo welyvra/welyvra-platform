@@ -53,6 +53,21 @@ importers:
         specifier: 3.4.8
         version: 3.4.8
 
+  packages/ingestion:
+    dependencies:
+      '@welyvra/core':
+        specifier: workspace:*
+        version: link:../core
+      '@welyvra/db':
+        specifier: workspace:*
+        version: link:../db
+      '@welyvra/stellar':
+        specifier: workspace:*
+        version: link:../stellar
+      postgres:
+        specifier: 3.4.8
+        version: 3.4.8
+
   packages/stellar:
     dependencies:
       '@stellar/stellar-sdk':
