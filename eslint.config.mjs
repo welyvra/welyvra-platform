@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -13,11 +14,19 @@ export default tseslint.config(
   },
   js.configs.recommended,
   ...tseslint.configs.strict,
+  { languageOptions: { globals: { ...globals.node } } },
   {
     rules: {
-      // Money must never be a JS number: forbid parseFloat / Number() on amounts by convention,
-      // and forbid floating literal arithmetic helpers that hide precision loss.
+      // Money is never a JS number. Amounts are bigint (see packages/core/src/amount.ts).
       'no-restricted-globals': ['error', { name: 'parseFloat', message: 'Use bigint amounts.' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
     },
+  },
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx'],
+    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
   },
 );
