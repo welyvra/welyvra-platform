@@ -1,0 +1,30 @@
+{
+  "name": "@welyvra/ingestion",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "@welyvra/source": "./src/index.ts",
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./testing": {
+      "@welyvra/source": "./src/testing.ts",
+      "types": "./src/testing.ts",
+      "default": "./dist/testing.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@welyvra/core": "workspace:*",
+    "@welyvra/db": "workspace:*",
+    "@welyvra/stellar": "workspace:*",
+    "postgres": "3.4.8"
+  }
+}
