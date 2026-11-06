@@ -4,16 +4,18 @@ Public monorepo for Welyvra: a reconciliation layer for payments on Stellar (ing
 
 ## Status
 
-Pre-code. The repo holds architecture, ADRs and CI. Packages are created by their issues; do not scaffold empty packages.
+MVP implemented on testnet (issues #2–#11). Do not scaffold empty packages; new packages come with an issue.
 
 ## Stack (ADR-0001)
 
 pnpm workspaces · TypeScript (strict) · Node 24 LTS · Fastify · PostgreSQL 16 · Drizzle ORM (SQL migrations) · Next.js + Tailwind (dashboard) · Vitest · Playwright · `@stellar/stellar-sdk` ≥ 17.3.0 (W address support).
-Planned layout: `apps/api`, `apps/dashboard`, `packages/core` (pure domain: events, attribution, ledger, reconciliation), `packages/stellar` (RPC client, XDR/strkey decoding), `packages/db`.
+Layout: `packages/core` (pure domain: amounts, events, reconciliation, case state machine), `packages/stellar` (RPC client, event decoding), `packages/db` (SQL migrations, Drizzle schema), `packages/ingestion` (worker), `packages/reconciliation` (ledger, cases, runs, webhook outbox), `apps/api` (Fastify), `apps/dashboard` (Next.js). Demo: `scripts/demo`.
 
 ## Commands
 
-- `pnpm install` · `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build`
+- `pnpm install` · `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build` · `pnpm demo` · `pnpm e2e`
+- Database tests need `DATABASE_URL` (start `infra/docker/compose.yml`); they fail rather than skip without it.
+- After changing API routes: `pnpm --filter @welyvra/api openapi` (a test checks the committed spec).
 
 ## Architecture
 

@@ -13,3 +13,6 @@ coverage/
 playwright-report/
 test-results/
 apps/dashboard/next-env.d.ts
+tests/e2e/.state/
+playwright-report/
+test-results/

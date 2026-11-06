@@ -24,8 +24,15 @@ const NEXT: Record<string, string[]> = {
   dismissed: [],
 };
 
-export default async function CaseDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function CaseDetail({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ updated?: string }>;
+}) {
   const { id } = await params;
+  const { updated } = await searchParams;
   const c = await api<Detail>(`/v1/cases/${encodeURIComponent(id)}`).catch((e) => {
     if (e instanceof ApiError && (e.status === 404 || e.status === 400)) notFound();
     throw e;
@@ -45,6 +52,16 @@ export default async function CaseDetail({ params }: { params: Promise<{ id: str
         description={`Opened ${formatDate(c.created_at)}`}
         action={<Badge variant={statusVariant(c.status)}>{c.status}</Badge>}
       />
+      {updated && (
+        <p
+          role="status"
+          className="mb-4 rounded-lg border border-mint/30 bg-mint/10 px-4 py-3 text-sm text-mint"
+        >
+          {updated === 'attributed'
+            ? 'Deposit attributed. A new ledger entry was recorded and this case is resolved.'
+            : 'Case updated.'}
+        </p>
+      )}
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           {deposit && (
@@ -110,6 +127,7 @@ export default async function CaseDetail({ params }: { params: Promise<{ id: str
                 Creates a new ledger entry and resolves this case. Nothing existing is edited.
               </p>
               <AttributeForm
+                caseId={c.id}
                 depositId={depositId}
                 customers={customers.data.map((x) => ({
                   id: x.id,

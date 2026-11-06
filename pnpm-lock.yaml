@@ -23,12 +23,33 @@ importers:
       '@types/node':
         specifier: ^24.19.2
         version: 24.19.2
+      '@welyvra/api':
+        specifier: workspace:*
+        version: link:apps/api
+      '@welyvra/core':
+        specifier: workspace:*
+        version: link:packages/core
+      '@welyvra/db':
+        specifier: workspace:*
+        version: link:packages/db
+      '@welyvra/ingestion':
+        specifier: workspace:*
+        version: link:packages/ingestion
+      '@welyvra/reconciliation':
+        specifier: workspace:*
+        version: link:packages/reconciliation
+      '@welyvra/stellar':
+        specifier: workspace:*
+        version: link:packages/stellar
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)
       globals:
         specifier: ^17.14.0
         version: 17.14.0
+      postgres:
+        specifier: 3.4.8
+        version: 3.4.8
       prettier:
         specifier: ^3.9.10
         version: 3.9.10
