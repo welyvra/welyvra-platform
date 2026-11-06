@@ -6,7 +6,7 @@
   "type": "module",
   "exports": {
     ".": {
-      "source": "./src/index.ts",
+      "@welyvra/source": "./src/index.ts",
       "types": "./src/index.ts",
       "default": "./dist/index.js"
     }
