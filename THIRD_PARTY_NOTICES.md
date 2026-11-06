@@ -10,6 +10,7 @@ Adapted files and the original location of each:
 | Welyvra file                                                       | Adapted from                                                                                        |
 | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
 | `packages/core/src/decimal.ts`                                     | `apps/shared/src/utils/bigintMath.ts` (`parseDecimalStringToBigInt`, `formatBigIntAsDecimalString`) |
+| `apps/dashboard/src/components/ui/{Badge,Card,EmptyState}.tsx` | `apps/webapp/src/components/ui/{Badge,Card,EmptyState}.tsx` (recolored, animation removed) |
 | `apps/api/src/security.ts` (`safeEqual`, webhook signing approach) | `apps/api/src/utils/safeEqual.ts`, `apps/api/src/services/WebhookService.ts`                        |
 
 ```
