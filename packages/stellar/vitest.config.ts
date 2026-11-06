@@ -1,5 +1,3 @@
 import { defineConfig } from 'vitest/config';
-export default defineConfig({
-  resolve: { conditions: ['source'] },
-  test: { include: ['src/**/*.test.ts'] },
-});
+import { sourceConditions } from '../../vitest.shared.js';
+export default defineConfig({ ...sourceConditions, test: { include: ['src/**/*.test.ts'] } });
