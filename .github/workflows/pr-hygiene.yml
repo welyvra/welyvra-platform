@@ -32,6 +32,8 @@ jobs:
 
   pr-structure:
     name: PR description structure
+    # Dependabot PRs have their own fixed format; secret scan and dependency review still run on them.
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
