@@ -61,9 +61,24 @@ importers:
       '@welyvra/db':
         specifier: workspace:*
         version: link:../db
+      '@welyvra/reconciliation':
+        specifier: workspace:*
+        version: link:../reconciliation
       '@welyvra/stellar':
         specifier: workspace:*
         version: link:../stellar
+      postgres:
+        specifier: 3.4.8
+        version: 3.4.8
+
+  packages/reconciliation:
+    dependencies:
+      '@welyvra/core':
+        specifier: workspace:*
+        version: link:../core
+      '@welyvra/db':
+        specifier: workspace:*
+        version: link:../db
       postgres:
         specifier: 3.4.8
         version: 3.4.8

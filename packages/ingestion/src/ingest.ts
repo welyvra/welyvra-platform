@@ -1,5 +1,6 @@
 import type { Network } from '@welyvra/core';
 import { inTransaction } from '@welyvra/db';
+import { openCase, postDeposit } from '@welyvra/reconciliation';
 import {
   type EventQuery,
   type EventSource,
@@ -208,12 +209,33 @@ export async function ingestBatch(cfg: IngestConfig): Promise<BatchResult> {
           : await tx<{ customer_id: string }[]>`
               SELECT customer_id FROM routing_keys
               WHERE receiving_account_id = ${account.id} AND kind = ${ev.routingKind}::routing_kind AND value = ${ev.routingValue}`;
-      const rows = await tx`
+      const customerId = key?.customer_id ?? null;
+      const [deposit] = await tx<{ id: string }[]>`
         INSERT INTO deposits (org_id, chain_event_id, receiving_account_id, customer_id, status, token_contract, amount)
-        VALUES (${account.org_id}, ${ev.chainEventId}, ${account.id}, ${key?.customer_id ?? null},
-          ${key ? 'attributed' : 'unattributed'}::deposit_status, ${ev.token}, ${ev.amount})
+        VALUES (${account.org_id}, ${ev.chainEventId}, ${account.id}, ${customerId},
+          ${customerId ? 'attributed' : 'unattributed'}::deposit_status, ${ev.token}, ${ev.amount})
         ON CONFLICT (chain_event_id, receiving_account_id) DO NOTHING RETURNING id`;
-      result.deposits += rows.length;
+      if (!deposit) continue;
+      result.deposits++;
+      await postDeposit(tx, {
+        orgId: account.org_id,
+        depositId: deposit.id,
+        receivingAccountId: account.id,
+        customerId,
+        tokenContract: ev.token,
+        amount: ev.amount,
+      });
+      if (!customerId) {
+        await openCase(tx, {
+          orgId: account.org_id,
+          kind: 'unattributed_deposit',
+          subjectRef: `deposit:${deposit.id}`,
+          detail: ev.routingKind
+            ? `unknown routing key ${ev.routingKind}:${ev.routingValue}`
+            : 'no routing key',
+          actor: 'ingestion',
+        });
+      }
     }
     cfg.faultInjector?.('after_deposits');
 

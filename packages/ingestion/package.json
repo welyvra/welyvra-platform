@@ -25,6 +25,7 @@
     "@welyvra/core": "workspace:*",
     "@welyvra/db": "workspace:*",
     "@welyvra/stellar": "workspace:*",
-    "postgres": "3.4.8"
+    "postgres": "3.4.8",
+    "@welyvra/reconciliation": "workspace:*"
   }
 }
