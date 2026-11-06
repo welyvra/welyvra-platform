@@ -34,7 +34,7 @@ function packMuxedContract(contractId: Uint8Array, id: bigint): Uint8Array {
 
 const RPC_URL = 'https://soroban-testnet.stellar.org';
 const PASSPHRASE = Networks.TESTNET;
-const OUT = 'tests/fixtures/stellar';
+const OUT = process.env.P30_OUT_DIR ?? 'tests/fixtures/stellar';
 const server = new rpc.Server(RPC_URL);
 
 async function friendbot(pub: string): Promise<void> {

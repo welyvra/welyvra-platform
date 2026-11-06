@@ -4,7 +4,7 @@
 
 Welyvra is an open-source reconciliation layer for businesses that receive payments on [Stellar](https://stellar.org). It attributes every deposit to the right customer, records it exactly once in a double-entry ledger, reconciles on-chain activity against internal records, and turns every mismatch into a tracked exception.
 
-> **Status: pre-alpha, design phase.** There is no runnable code yet. This repository currently contains the architecture, decision records and CI. Nothing here is audited or production-ready. Testnet only.
+> **Status: pre-alpha.** The MVP runs end to end on Stellar **testnet**: ingestion, attribution (memo, `M` and `W` addresses), double-entry ledger, reconciliation, exception cases, API, webhooks and dashboard. It has not been audited and is not production-ready. No mainnet use.
 
 ## The problem
 
@@ -15,7 +15,7 @@ A business can receive thousands of payments into one shared Stellar account. Se
 - reconcile the chain against its own database and explain every difference;
 - investigate unidentified deposits and keep an audit trail.
 
-## What Welyvra will provide (MVP)
+## What the MVP does
 
 | Component      | Purpose                                                                  |
 | -------------- | ------------------------------------------------------------------------ |
@@ -29,7 +29,16 @@ A business can receive thousands of payments into one shared Stellar account. Se
 
 What Welyvra does **not** do: custody, moving funds, KYC, exchange, tokens. It cannot reverse finalized transactions.
 
+## Try it
+
+See [Getting started](docs/getting-started/README.md): `pnpm demo` reproduces the full flow with real testnet events in about two minutes.
+
+![Overview](docs/images/dashboard-overview.png)
+
 ## Documentation
+
+- [Getting started](docs/getting-started/README.md)
+- [API reference](docs/api/README.md) and [OpenAPI spec](docs/api/openapi.json)
 
 - [Architecture overview](docs/architecture/overview.md)
 - [Stellar integration](docs/architecture/stellar-integration.md)

@@ -1,6 +1,6 @@
 # Architecture overview
 
-Status: proposed (2026-11-05). Nothing below is implemented yet; each part is tracked by an issue.
+Status: implemented for the testnet MVP (issues #2 to #11). Module names below match the packages in this repository.
 
 ## Shape
 
@@ -23,13 +23,15 @@ Stellar RPC ──getEvents──▶ ingestion worker ──tx──▶ PostgreS
 
 ## Modules
 
-| Module             | Responsibility                                                           | Depends on             |
-| ------------------ | ------------------------------------------------------------------------ | ---------------------- |
-| `packages/core`    | Pure domain: event normalization, attribution, ledger rules, matching    | nothing (no I/O)       |
-| `packages/stellar` | RPC client, XDR and strkey (`G`/`M`/`C`/`W`) decoding                    | `@stellar/stellar-sdk` |
-| `packages/db`      | Schema, migrations, repositories                                         | Drizzle, PostgreSQL    |
-| `apps/api`         | REST API, auth, OpenAPI, ingestion worker entrypoint, webhook dispatcher | all packages           |
-| `apps/dashboard`   | Operations UI                                                            | API                    |
+| Module                    | Responsibility                                                           | Depends on                        |
+| ------------------------- | ------------------------------------------------------------------------ | --------------------------------- |
+| `packages/core`           | Pure domain: event normalization, attribution, ledger rules, matching    | nothing (no I/O)                  |
+| `packages/stellar`        | RPC client, XDR and strkey (`G`/`M`/`C`/`W`) decoding                    | `@stellar/stellar-sdk`            |
+| `packages/db`             | Schema, migrations, repositories                                         | Drizzle, PostgreSQL               |
+| `apps/api`                | REST API, auth, OpenAPI, ingestion worker entrypoint, webhook dispatcher | all packages                      |
+| `packages/ingestion`      | Ingestion worker (transactional batches, cursor, gap detection)          | core, stellar, db, reconciliation |
+| `packages/reconciliation` | Ledger postings, cases, reconciliation runs, webhook outbox              | core, db                          |
+| `apps/dashboard`          | Operations UI                                                            | API                               |
 
 Keeping `core` free of I/O makes the financial rules unit-testable with fixtures, including adversarial sequences.
 

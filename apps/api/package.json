@@ -9,6 +9,11 @@
       "@welyvra/source": "./src/index.ts",
       "types": "./src/index.ts",
       "default": "./dist/index.js"
+    },
+    "./security": {
+      "@welyvra/source": "./src/security.ts",
+      "types": "./src/security.ts",
+      "default": "./dist/security.js"
     }
   },
   "bin": {

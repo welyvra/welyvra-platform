@@ -45,7 +45,8 @@ export async function runReconciliation(_: ActionState): Promise<ActionState> {
 
 export async function attributeDeposit(_: ActionState, form: FormData): Promise<ActionState> {
   const depositId = String(form.get('depositId'));
-  return run(
+  const caseId = String(form.get('caseId') ?? '');
+  const result = await run(
     () =>
       api(`/v1/deposits/${depositId}/attribute`, {
         method: 'POST',
@@ -54,11 +55,14 @@ export async function attributeDeposit(_: ActionState, form: FormData): Promise<
     'Deposit attributed',
     ['/', '/deposits', '/cases'],
   );
+  // The form unmounts once the case is resolved, so confirm on the case page itself.
+  if (result.ok && /^[0-9a-f-]{36}$/.test(caseId)) redirect(`/cases/${caseId}?updated=attributed`);
+  return result;
 }
 
 export async function transitionCase(_: ActionState, form: FormData): Promise<ActionState> {
   const caseId = String(form.get('caseId'));
-  return run(
+  const result = await run(
     () =>
       api(`/v1/cases/${caseId}/transitions`, {
         method: 'POST',
@@ -67,4 +71,6 @@ export async function transitionCase(_: ActionState, form: FormData): Promise<Ac
     'Case updated',
     ['/', '/cases', `/cases/${caseId}`],
   );
+  if (result.ok && /^[0-9a-f-]{36}$/.test(caseId)) redirect(`/cases/${caseId}?updated=status`);
+  return result;
 }

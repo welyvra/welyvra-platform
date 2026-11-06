@@ -38,9 +38,11 @@ export function RunReconciliationButton() {
 }
 
 export function AttributeForm({
+  caseId,
   depositId,
   customers,
 }: {
+  caseId: string;
   depositId: string;
   customers: { id: string; label: string }[];
 }) {
@@ -48,6 +50,7 @@ export function AttributeForm({
   return (
     <form action={action} className="space-y-3">
       <input type="hidden" name="depositId" value={depositId} />
+      <input type="hidden" name="caseId" value={caseId} />
       <div>
         <label htmlFor="customerId" className="mb-1 block text-xs text-muted">
           Customer
