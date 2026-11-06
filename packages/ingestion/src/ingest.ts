@@ -1,6 +1,6 @@
 import type { Network } from '@welyvra/core';
 import { inTransaction } from '@welyvra/db';
-import { openCase, postDeposit } from '@welyvra/reconciliation';
+import { enqueueWebhook, openCase, postDeposit } from '@welyvra/reconciliation';
 import {
   type EventQuery,
   type EventSource,
@@ -223,6 +223,14 @@ export async function ingestBatch(cfg: IngestConfig): Promise<BatchResult> {
         receivingAccountId: account.id,
         customerId,
         tokenContract: ev.token,
+        amount: ev.amount,
+      });
+      await enqueueWebhook(tx, account.org_id, 'deposit.created', {
+        deposit_id: deposit.id,
+        receiving_account_id: account.id,
+        customer_id: customerId,
+        status: customerId ? 'attributed' : 'unattributed',
+        token_contract: ev.token,
         amount: ev.amount,
       });
       if (!customerId) {

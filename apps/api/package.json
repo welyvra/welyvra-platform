@@ -1,0 +1,39 @@
+{
+  "name": "@welyvra/api",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "@welyvra/source": "./src/index.ts",
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "welyvra-admin": "./dist/admin-cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "start": "node dist/server.js",
+    "admin": "node dist/admin-cli.js",
+    "openapi": "node dist/openapi-cli.js ../../docs/api/openapi.json"
+  },
+  "dependencies": {
+    "@fastify/rate-limit": "11.2.2",
+    "@fastify/swagger": "9.9.3",
+    "@stellar/stellar-sdk": "17.4.0",
+    "@welyvra/core": "workspace:*",
+    "@welyvra/db": "workspace:*",
+    "@welyvra/ingestion": "workspace:*",
+    "@welyvra/reconciliation": "workspace:*",
+    "@welyvra/stellar": "workspace:*",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "fastify": "5.12.8",
+    "postgres": "3.4.8"
+  }
+}

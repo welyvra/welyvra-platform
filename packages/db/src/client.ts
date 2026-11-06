@@ -30,3 +30,10 @@ export function connect(
   });
   return { sql, db: drizzle(sql, { schema }), close: () => sql.end({ timeout: 5 }) };
 }
+
+/** First row of a statement that must return exactly one row (e.g. INSERT ... RETURNING). */
+export function one<T>(rows: readonly T[]): T {
+  const [row] = rows;
+  if (row === undefined) throw new Error('invariant: statement returned no row');
+  return row;
+}

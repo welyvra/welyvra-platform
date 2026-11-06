@@ -1,5 +1,6 @@
 import type { CaseKind } from '@welyvra/core';
 import type { Sql } from 'postgres';
+import { enqueueWebhook } from './webhooks.js';
 
 /** Ledger accounts. Sign convention: on-chain holdings are positive, liabilities to customers negative. */
 export const accounts = {
@@ -47,6 +48,11 @@ export async function openCase(
   await tx`
     INSERT INTO case_events (case_id, org_id, actor, from_status, to_status, reason)
     VALUES (${row.id}, ${c.orgId}, ${c.actor}, NULL, 'open', 'detected')`;
+  await enqueueWebhook(tx, c.orgId, 'case.opened', {
+    case_id: row.id,
+    kind: c.kind,
+    subject_ref: c.subjectRef,
+  });
   return row.id;
 }
 
