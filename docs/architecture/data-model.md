@@ -44,3 +44,12 @@ Status: proposed. Final schema lands with its issue; invariants here are require
 - Balance: two deferred constraint triggers check every entry at commit (≥ 2 postings, sum per asset = 0), including postings added later to an old entry.
 - Tenancy: composite foreign keys `(id, org_id)` make cross-organization references impossible at the database level.
 - Local database: `docker compose -f infra/docker/compose.yml up -d`, then `DATABASE_URL` from `.env.example`. Database tests fail loudly without it.
+
+## Ledger, reconciliation and cases (issue #8)
+
+- Every deposit gets a `deposit` journal entry in the ingestion transaction: `onchain:<receiving account>` +amount, and `customer:<id>` or `unattributed:<receiving account>` −amount (per token contract).
+- Resolving an unattributed deposit (`attributeDeposit`) writes a new `reattribution` entry (`unattributed` +amount, `customer` −amount); no existing posting changes. Concurrent attempts: exactly one wins.
+- `internal_records` are immutable and idempotent by `(org_id, external_id)`; a resubmission with different content is reported as a conflict, never overwritten.
+- `runReconciliation` is deterministic (pure `reconcile()` in `packages/core`): tx-hash matches first, then `(customer, token, amount)`, oldest first. Outcomes: matched, amount mismatch, customer mismatch, missing internally, missing on-chain.
+- Exception cases are unique per `(org_id, kind, subject_ref)`, so repeated or concurrent runs never duplicate them and dismissed cases are not reopened. Status changes follow `open → investigating → resolved | dismissed`, enforced in code and by a database trigger; every change is recorded in `case_events` and `audit_log`.
+- CLI: `DATABASE_URL=... pnpm --filter @welyvra/reconciliation reconcile <org-id>`.

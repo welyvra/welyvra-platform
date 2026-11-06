@@ -43,6 +43,17 @@ describe('ingestion from recorded testnet events', () => {
       { ref: 'dave', status: 'attributed', amount: '40000000', account: seed.accountC }, // W address
       { ref: 'carol', status: 'attributed', amount: '50000000', account: seed.accountG }, // SAC to M
     ]);
+
+    // Every deposit got a balanced entry; the unattributed one opened a case.
+    const [{ entries }] =
+      (await t.sql`SELECT count(*)::int AS entries FROM journal_entries WHERE kind = 'deposit'`) as unknown as [
+        { entries: number },
+      ];
+    expect(entries).toBe(6);
+    const cases = await t.sql`SELECT kind::text, status::text, detail FROM exception_cases`;
+    expect(cases).toEqual([
+      { kind: 'unattributed_deposit', status: 'open', detail: 'no routing key' },
+    ]);
   });
 
   it('ignores fee events and payments to accounts nobody registered', async () => {
