@@ -36,3 +36,11 @@ Status: proposed. Final schema lands with its issue; invariants here are require
 5. Every query is scoped by `org_id`; a cross-tenant read test exists for every endpoint.
 6. Re-running reconciliation on the same inputs yields identical results and opens no duplicate cases.
 7. Out-of-order arrival of events does not change final balances.
+
+## Implementation (issue #5)
+
+- SQL migrations in `packages/db/src/migrations/` are the source of truth; `packages/db/src/schema.ts` mirrors them for typed queries.
+- Append-only: `chain_events`, `chain_event_rejections`, `journal_entries`, `postings`, `audit_log` reject `UPDATE`/`DELETE` (and `TRUNCATE` for the ledger) through triggers, for every role.
+- Balance: two deferred constraint triggers check every entry at commit (≥ 2 postings, sum per asset = 0), including postings added later to an old entry.
+- Tenancy: composite foreign keys `(id, org_id)` make cross-organization references impossible at the database level.
+- Local database: `docker compose -f infra/docker/compose.yml up -d`, then `DATABASE_URL` from `.env.example`. Database tests fail loudly without it.

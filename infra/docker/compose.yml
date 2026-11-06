@@ -1,0 +1,15 @@
+# Local development database. Never use these credentials outside your machine.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: welyvra
+      POSTGRES_PASSWORD: welyvra
+      POSTGRES_DB: welyvra
+    ports:
+      - '54329:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U welyvra']
+      interval: 2s
+      timeout: 3s
+      retries: 30
