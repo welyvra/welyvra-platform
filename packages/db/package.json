@@ -6,12 +6,12 @@
   "type": "module",
   "exports": {
     ".": {
-      "source": "./src/index.ts",
+      "@welyvra/source": "./src/index.ts",
       "types": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./testing": {
-      "source": "./src/testing.ts",
+      "@welyvra/source": "./src/testing.ts",
       "types": "./src/testing.ts",
       "default": "./dist/testing.js"
     }
