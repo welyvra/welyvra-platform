@@ -18,6 +18,23 @@ jobs:
     name: Lint, typecheck, test, build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: welyvra
+          POSTGRES_PASSWORD: welyvra
+          POSTGRES_DB: welyvra
+        ports:
+          - 54329:5432
+        options: >-
+          --health-cmd "pg_isready -U welyvra"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      # Throwaway CI database. Database tests fail (never skip) without it.
+      DATABASE_URL: postgres://welyvra:welyvra@localhost:54329/welyvra
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
