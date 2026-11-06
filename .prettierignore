@@ -1,2 +1,5 @@
 pnpm-lock.yaml
 LICENSE
+.next
+next-env.d.ts
+docs/api/openapi.json
