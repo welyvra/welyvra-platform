@@ -54,3 +54,14 @@ Stellar RPC keeps a limited window of events. SDF testnet RPC reports `ledgerRet
 ## Networks
 
 MVP: testnet only, fake data, Friendbot-funded accounts. Mainnet requires explicit approval from the founder.
+
+## Ingestion guarantees (issues #6 and #7, tested in `packages/ingestion`)
+
+| Situation                                                             | Behavior                                                                                       |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Same event delivered again (same page, later page, full re-ingestion) | No-op: `UNIQUE (network, event_id)` and `UNIQUE (chain_event_id, receiving_account_id)`        |
+| Crash at any step of a batch                                          | Whole batch rolls back (one transaction); restart resumes from the last committed cursor       |
+| Several workers on the same stream                                    | Serialized by `pg_advisory_xact_lock`; a worker whose cursor moved discards its page (`stale`) |
+| Cursor older than RPC retention                                       | Stream marked `gap_detected`, cursor frozen, worker stops; backfill needed (post-MVP)          |
+| Malformed event                                                       | Stored in `chain_event_rejections` with the reason                                             |
+| Page size                                                             | Final state is identical for any page size                                                     |
