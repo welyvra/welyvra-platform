@@ -1,0 +1,19 @@
+name: Bug report
+description: Something behaves incorrectly
+labels: ['type:bug']
+body:
+  - type: textarea
+    id: what
+    attributes: { label: What happened, description: Do not include secrets or real customer data. }
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes: { label: Expected behavior }
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes: { label: Steps to reproduce }
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes: { label: Version or commit }

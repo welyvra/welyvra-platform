@@ -1,0 +1,40 @@
+name: Implementation task
+description: A scoped piece of work with acceptance criteria
+labels: ['type:feature']
+body:
+  - type: textarea
+    id: context
+    attributes: { label: Context, description: Background and links (requirement ID, ADR). }
+    validations: { required: true }
+  - type: textarea
+    id: problem
+    attributes: { label: Problem }
+    validations: { required: true }
+  - type: textarea
+    id: goal
+    attributes: { label: Goal }
+    validations: { required: true }
+  - type: textarea
+    id: scope
+    attributes: { label: Scope, description: In scope / out of scope. }
+    validations: { required: true }
+  - type: textarea
+    id: deps
+    attributes: { label: Dependencies, description: 'Issues that must be done first (#n).' }
+  - type: textarea
+    id: acceptance
+    attributes: { label: Acceptance criteria, description: Testable statements. }
+    validations: { required: true }
+  - type: textarea
+    id: tests
+    attributes: { label: Tests required, description: Include adversarial cases where relevant. }
+    validations: { required: true }
+  - type: textarea
+    id: dod
+    attributes:
+      label: Definition of done
+      value: |
+        - [ ] Acceptance criteria met
+        - [ ] Tests added and passing in CI
+        - [ ] Docs updated
+        - [ ] Reviewed and merged via PR

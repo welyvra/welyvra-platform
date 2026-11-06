@@ -1,0 +1,52 @@
+name: PR hygiene
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: trufflesecurity/trufflehog@ea68ca03c865c5f324e86e849ced20ed3cf9dbbb # v3.99.8
+        with:
+          extra_args: --results=verified,unknown
+
+  dependency-review:
+    name: Dependency review
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate
+
+  pr-structure:
+    name: PR description structure
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check required sections
+        env:
+          # Passed through env, never interpolated into the script, to avoid injection.
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          missing=0
+          for section in "## Linked issue" "## Summary" "## How to test" "## Test results" "## Risks"; do
+            if ! printf '%s' "$PR_BODY" | grep -qF "$section"; then
+              echo "::error::Missing section: $section"; missing=1
+            fi
+          done
+          if ! printf '%s' "$PR_BODY" | grep -qiE '(closes|fixes|resolves|refs) #[0-9]+'; then
+            echo "::error::Link an issue with 'Closes #<n>' or 'Refs #<n>'"; missing=1
+          fi
+          exit $missing
