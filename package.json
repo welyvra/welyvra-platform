@@ -10,8 +10,9 @@
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test",
-    "build": "pnpm -r --if-present build"
+    "test": "pnpm -r --if-present test && vitest run",
+    "build": "pnpm -r --if-present build",
+    "research:p30": "node scripts/research/p30-events.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
@@ -20,11 +21,14 @@
     "prettier": "^3.9.10",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.72.1",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "@stellar/stellar-sdk": "17.4.0",
+    "globals": "^17.14.0"
   },
   "pnpm": {
     "overrides": {
       "minimatch@>=7 <11.0.1": "^11.0.1"
     }
-  }
+  },
+  "type": "module"
 }
