@@ -2,6 +2,7 @@ import { type CaseStatus, assertTransition, reconcile, summarize } from '@welyvr
 import { inTransaction } from '@welyvra/db';
 import type { Sql } from 'postgres';
 import { accounts, audit, openCase } from './ledger.js';
+import { enqueueWebhook } from './webhooks.js';
 
 /** First row of a statement that must return exactly one row (e.g. INSERT ... RETURNING). */
 function one<T>(rows: readonly T[]): T {
@@ -75,6 +76,11 @@ export async function transitionCase(
     await tx`UPDATE exception_cases SET status = ${p.to}::case_status WHERE id = ${p.caseId}`;
     await tx`INSERT INTO case_events (case_id, org_id, actor, from_status, to_status, reason)
              VALUES (${p.caseId}, ${p.orgId}, ${p.actor}, ${c.status}, ${p.to}::case_status, ${p.reason})`;
+    await enqueueWebhook(tx, p.orgId, 'case.updated', {
+      case_id: p.caseId,
+      from: c.status,
+      to: p.to,
+    });
     await audit(tx, {
       orgId: p.orgId,
       actor: p.actor,
@@ -234,6 +240,11 @@ export async function runReconciliation(
       )
         casesOpened++;
     }
+    await enqueueWebhook(tx, p.orgId, 'reconciliation.completed', {
+      run_id: run.id,
+      summary,
+      cases_opened: casesOpened,
+    });
     await audit(tx, {
       orgId: p.orgId,
       actor: p.actor,
