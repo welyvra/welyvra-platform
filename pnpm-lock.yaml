@@ -41,6 +41,15 @@ importers:
 
   packages/core: {}
 
+  packages/stellar:
+    dependencies:
+      '@stellar/stellar-sdk':
+        specifier: 17.4.0
+        version: 17.4.0
+      '@welyvra/core':
+        specifier: workspace:*
+        version: link:../core
+
 packages:
 
   '@eslint-community/eslint-utils@4.10.1':
