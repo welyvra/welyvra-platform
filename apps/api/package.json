@@ -11,21 +11,21 @@
       "default": "./dist/index.js"
     },
     "./security": {
-      "@welyvra/source": "./src/security.ts",
-      "types": "./src/security.ts",
-      "default": "./dist/security.js"
+      "@welyvra/source": "./src/utils/security.ts",
+      "types": "./src/utils/security.ts",
+      "default": "./dist/utils/security.js"
     }
   },
   "bin": {
-    "welyvra-admin": "./dist/admin-cli.js"
+    "welyvra-admin": "./dist/cli/admin.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "start": "node dist/server.js",
-    "admin": "node dist/admin-cli.js",
-    "openapi": "node dist/openapi-cli.js ../../docs/api/openapi.json"
+    "admin": "node dist/cli/admin.js",
+    "openapi": "node dist/cli/openapi.js ../../docs/api/openapi.json"
   },
   "dependencies": {
     "@fastify/rate-limit": "11.2.2",

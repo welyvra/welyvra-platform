@@ -27,14 +27,17 @@ Stellar RPC ──getEvents──▶ ingestion worker ──tx──▶ PostgreS
 | ------------------------- | ------------------------------------------------------------------------ | --------------------------------- |
 | `packages/core`           | Pure domain: event normalization, attribution, ledger rules, matching    | nothing (no I/O)                  |
 | `packages/stellar`        | RPC client, XDR and strkey (`G`/`M`/`C`/`W`) decoding                    | `@stellar/stellar-sdk`            |
-| `packages/db`             | Schema, migrations, repositories                                         | Drizzle, PostgreSQL               |
+| `packages/db`             | Schema, migrations, connection, test database helper                     | Drizzle, PostgreSQL               |
 | `apps/api`                | REST API, auth, OpenAPI, ingestion worker entrypoint, webhook dispatcher | all packages                      |
 | `packages/ingestion`      | Ingestion worker (transactional batches, cursor, gap detection)          | core, stellar, db, reconciliation |
 | `packages/reconciliation` | Ledger postings, cases, reconciliation runs, webhook outbox              | core, db                          |
-| `apps/dashboard`          | Operations UI                                                            | API                               |
+| `apps/webapp`             | Web frontend (operations UI)                                             | API                               |
+| `apps/contracts`          | Soroban contracts (Rust): receiver vault, reconciliation seal            | `soroban-sdk`                     |
+
+Folder-level layout of each app: [project-structure.md](project-structure.md).
 
 Keeping `core` free of I/O makes the financial rules unit-testable with fixtures, including adversarial sequences.
 
 ## Explicit non-goals
 
-Custody, signing, moving funds, smart contracts (none needed for the MVP — see ADR-0004), multi-chain, Kubernetes, Kafka.
+Custody of customer funds, holding keys that can pay arbitrary addresses, multi-chain, Kubernetes, Kafka. Contracts are limited to the receiver vault and the reconciliation seal (ADR-0005).

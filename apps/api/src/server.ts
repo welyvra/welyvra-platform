@@ -1,66 +1,34 @@
+// Process entry point: load config, migrate, serve HTTP, run background workers, shut down cleanly.
 import { connect, migrate } from '@welyvra/db';
-import { runWorker } from '@welyvra/ingestion';
-import { RpcEventSource } from '@welyvra/stellar';
-import { Asset, Networks } from '@stellar/stellar-sdk';
 import { buildApp } from './app.js';
-import { dispatchDue } from './webhooks/dispatcher.js';
+import { loadConfig } from './config/env.js';
+import { runIngestionWorker } from './workers/ingestionWorker.js';
+import { runWebhookWorker } from './workers/webhookWorker.js';
 
-const env = (name: string, fallback?: string): string => {
-  const v = process.env[name] ?? fallback;
-  if (v === undefined) throw new Error(`${name} is required`);
-  return v;
-};
-
-const network = env('STELLAR_NETWORK', 'testnet') as 'testnet' | 'mainnet';
-const passphrase = network === 'mainnet' ? Networks.PUBLIC : Networks.TESTNET;
-const { sql, close } = connect(env('DATABASE_URL'));
+const config = loadConfig();
+const { sql, close } = connect(config.databaseUrl);
 await migrate(sql);
 
-const encryptionKey = env('WEBHOOK_ENCRYPTION_KEY');
-const allowInsecure = process.env.WEBHOOK_ALLOW_INSECURE === 'true';
+const urlPolicy = { allowInsecure: config.webhookAllowInsecure };
 const app = await buildApp({
   sql,
-  webhookEncryptionKey: encryptionKey,
+  webhookEncryptionKey: config.webhookEncryptionKey,
   logger: true,
-  urlPolicy: { allowInsecure },
+  urlPolicy,
 });
-await app.listen({ host: env('HOST', '127.0.0.1'), port: Number(env('PORT', '3001')) });
+await app.listen({ host: config.host, port: config.port });
 
 const stop = new AbortController();
 const tasks: Promise<void>[] = [];
-
-if (process.env.INGEST_ENABLED === 'true') {
-  tasks.push(
-    runWorker({
-      sql,
-      network,
-      source: new RpcEventSource({
-        url: env('STELLAR_RPC_URL', 'https://soroban-testnet.stellar.org'),
-      }),
-      sourceName: env('INGEST_SOURCE_NAME', 'default'),
-      tokenContracts: (process.env.TOKEN_CONTRACTS ?? Asset.native().contractId(passphrase)).split(
-        ',',
-      ),
-      startLedger: Number(env('INGEST_START_LEDGER')),
-      allowMainnet: process.env.ALLOW_MAINNET === 'true',
-      signal: stop.signal,
-      log: (msg, data) => app.log.info({ ...data }, msg),
-    }),
-  );
-}
-
+if (config.ingestion.enabled)
+  tasks.push(runIngestionWorker({ sql, config, log: app.log, signal: stop.signal }));
 tasks.push(
-  (async () => {
-    while (!stop.signal.aborted) {
-      try {
-        const r = await dispatchDue(sql, { encryptionKey, urlPolicy: { allowInsecure } });
-        if (r.delivered + r.retried + r.failed > 0) app.log.info(r, 'webhooks.dispatch');
-      } catch (e) {
-        app.log.error({ err: e }, 'webhooks.dispatch_error');
-      }
-      await new Promise((r) => setTimeout(r, 2_000));
-    }
-  })(),
+  runWebhookWorker({
+    sql,
+    dispatch: { encryptionKey: config.webhookEncryptionKey, urlPolicy },
+    log: app.log,
+    signal: stop.signal,
+  }),
 );
 
 const shutdown = async () => {

@@ -7,11 +7,11 @@ Parts of this repository are adapted from other open-source projects. Their lice
 Source: https://github.com/akkuea/akkuea (declared MIT in its README).
 Adapted files and the original location of each:
 
-| Welyvra file                                                       | Adapted from                                                                                        |
-| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| `packages/core/src/decimal.ts`                                     | `apps/shared/src/utils/bigintMath.ts` (`parseDecimalStringToBigInt`, `formatBigIntAsDecimalString`) |
-| `apps/dashboard/src/components/ui/{Badge,Card,EmptyState}.tsx`     | `apps/webapp/src/components/ui/{Badge,Card,EmptyState}.tsx` (recolored, animation removed)          |
-| `apps/api/src/security.ts` (`safeEqual`, webhook signing approach) | `apps/api/src/utils/safeEqual.ts`, `apps/api/src/services/WebhookService.ts`                        |
+| Welyvra file                                                             | Adapted from                                                                                        |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| `packages/core/src/decimal.ts`                                           | `apps/shared/src/utils/bigintMath.ts` (`parseDecimalStringToBigInt`, `formatBigIntAsDecimalString`) |
+| `apps/webapp/src/components/ui/{Badge,Card,EmptyState}.tsx`              | `apps/webapp/src/components/ui/{Badge,Card,EmptyState}.tsx` (recolored, animation removed)          |
+| `apps/api/src/utils/security.ts` (`safeEqual`, webhook signing approach) | `apps/api/src/utils/safeEqual.ts`, `apps/api/src/services/WebhookService.ts`                        |
 
 ```
 MIT License
