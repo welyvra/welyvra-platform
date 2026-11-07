@@ -21,7 +21,7 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
-      command: 'pnpm --dir apps/dashboard exec next start -p 3400 -H 127.0.0.1',
+      command: 'pnpm --dir apps/webapp exec next start -p 3400 -H 127.0.0.1',
       url: 'http://127.0.0.1:3400/login',
       reuseExistingServer: false,
       timeout: 120_000,

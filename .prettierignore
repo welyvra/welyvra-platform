@@ -5,3 +5,5 @@ next-env.d.ts
 docs/api/openapi.json
 playwright-report
 test-results
+apps/contracts/target/
+apps/contracts/**/test_snapshots/

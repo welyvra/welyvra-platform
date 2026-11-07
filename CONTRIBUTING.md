@@ -15,8 +15,11 @@ Thanks for your interest. Welyvra is early; the most useful contributions right 
 
 ```sh
 pnpm install
-pnpm lint && pnpm typecheck && pnpm test
+docker compose -f infra/docker/compose.yml up -d
+make check          # same checks as CI
 ```
+
+Where each kind of change belongs: [docs/architecture/project-structure.md](docs/architecture/project-structure.md). AI agents: read [AGENTS.md](AGENTS.md).
 
 ## Branches and commits
 

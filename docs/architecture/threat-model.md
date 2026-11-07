@@ -23,6 +23,19 @@ Correctness of the ledger · tenant data isolation · API keys · webhook secret
 | Financial correctness  | Indexer down longer than RPC retention            | Gap detection → exception; never report "in sync"                                                |
 | Financial correctness  | Malformed muxed ID / unknown address variant      | Strict parsing; unknown → unattributed, never dropped                                            |
 
+## Smart contracts (ADR-0005)
+
+| Threat                 | Example                                            | Mitigation                                                                               |
+| ---------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Elevation of privilege | Leaked operator key used to drain the vault        | Operator can only sweep to the admin-set treasury; refunds need the admin (the business) |
+| Tampering              | Same unattributed deposit refunded twice           | On-chain refund record per `deposit_ref`; second call fails (`AlreadyRefunded`)          |
+| Elevation of privilege | Admin key typo or loss locks the vault             | Two-step admin hand-over (`propose_admin` / `accept_admin`)                              |
+| Tampering              | Malicious code upgrade                             | Neither contract is upgradeable; fixes are new deployments                               |
+| Tampering              | Past reconciliation run edited after the fact      | Write-once seal per `(sealer, run_id)`; `verify` recomputes against the published digest |
+| Spoofing               | Seal written in another business's name            | `sealer.require_auth()`; seals namespaced by sealer                                      |
+| Denial of service      | Vault keeps working after a compromise is detected | Admin or operator can `pause` all outflows                                               |
+| Financial correctness  | Logic bug in the vault                             | Adversarial unit tests, clippy in CI; **independent audit required before mainnet**      |
+
 ## Out of scope
 
 Key custody and signing (Welyvra holds no keys that move funds).

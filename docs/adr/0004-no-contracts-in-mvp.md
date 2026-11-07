@@ -1,6 +1,6 @@
 # ADR-0004: No custom Soroban contracts in the MVP
 
-- Status: Accepted · Date: 2026-11-05
+- Status: Superseded by [ADR-0005](0005-contracts-vault-and-seal.md) · Date: 2026-11-05
 
 ## Decision
 

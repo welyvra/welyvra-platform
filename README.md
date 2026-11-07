@@ -38,6 +38,9 @@ See [Getting started](docs/getting-started/README.md): `pnpm demo` reproduces th
 ## Documentation
 
 - [Getting started](docs/getting-started/README.md)
+- [Project structure](docs/architecture/project-structure.md)
+- [Environment variables](docs/deployment/environment-variables.md)
+- [Testing](docs/testing/README.md)
 - [API reference](docs/api/README.md) and [OpenAPI spec](docs/api/openapi.json)
 
 - [Architecture overview](docs/architecture/overview.md)

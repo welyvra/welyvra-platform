@@ -28,7 +28,7 @@ All invariants hold.
 ```sh
 export WEBHOOK_ENCRYPTION_KEY=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
 DATABASE_URL=postgres://welyvra:welyvra@localhost:54329/welyvra_demo node apps/api/dist/server.js   # API on :3001
-cd apps/dashboard && WELYVRA_API_URL=http://127.0.0.1:3001 pnpm start                             # UI on :3000
+cd apps/webapp && WELYVRA_API_URL=http://127.0.0.1:3001 pnpm start                             # UI on :3000
 ```
 
 Sign in with the API key the demo printed. Open **Cases → Unattributed deposit** and attribute it to a customer: a new balanced ledger entry is written, the case is resolved, and the audit log records who did it and why.

@@ -1,0 +1,49 @@
+name: Contracts
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/contracts/**', '.github/workflows/contracts.yml']
+  pull_request:
+    paths: ['apps/contracts/**', '.github/workflows/contracts.yml']
+
+# Least privilege. No secrets are used, and pull_request_target is never used.
+permissions:
+  contents: read
+
+concurrency:
+  group: contracts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contracts:
+    name: Format, lint, test, build (Soroban)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: apps/contracts
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # rustup is preinstalled; rust-toolchain.toml selects the toolchain, wasm target and components.
+      - run: rustup show active-toolchain
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --locked --all-targets -- -D warnings
+      - run: cargo test --locked
+      # soroban-sdk 29 builds WASM only through the Stellar CLI. Pinned release, checksum verified.
+      - name: Install Stellar CLI 28.1.0
+        working-directory: ${{ runner.temp }}
+        run: |
+          curl -sSLo stellar.tgz https://github.com/stellar/stellar-cli/releases/download/v28.1.0/stellar-cli-28.1.0-x86_64-unknown-linux-gnu.tar.gz
+          echo "c1680deee94301d33ada7a17f98411e642a4248c727afbd2e43050d345746462  stellar.tgz" | sha256sum -c -
+          tar xzf stellar.tgz stellar
+          echo "$PWD" >> "$GITHUB_PATH"
+      - run: stellar contract build --locked
+      - name: Contract size limit (64 KiB)
+        run: |
+          for f in target/wasm32v1-none/release/*.wasm; do
+            size=$(stat -c%s "$f"); echo "$f: $size bytes"
+            if [ "$size" -gt 65536 ]; then echo "too large"; exit 1; fi
+          done
