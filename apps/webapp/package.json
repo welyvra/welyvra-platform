@@ -21,7 +21,7 @@
     "server-only": "0.0.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.1.18",
+    "@tailwindcss/postcss": "4.3.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "tailwindcss": "4.1.18"
